@@ -1,0 +1,105 @@
+spring:
+  application:
+    name: MissBlueBlogServer
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver # Mysql8.0 Driver
+    url: jdbc:mysql://localhost:3306/missblueblog_db?serverTimezone=Asia/Shanghai&allowMultiQueries=true
+    username: root
+    password: ma19940101
+    hikari:
+      minimum-idle: 10
+      idle-timeout: 180000
+      maximum-pool-size: 100
+      auto-commit: true
+      pool-name: MyHikariCP
+      max-lifetime: 60000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+    data:
+      redis:
+        host: localhost
+        port: 6379
+
+  rabbitmq:
+    host: rabbitmq?ip
+    port: 5672
+    username: ??
+    password: ??
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 3000
+
+  elasticsearch:
+    rest:
+      uris: es?ip:9200
+
+  mail:
+    host: smtp.163.com
+    username: ??
+    password: ??
+    default-encoding: UTF-8
+    protocol: smtp
+    port: 465
+    properties:
+      mail:
+        smtp:
+          auth: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+            port: 465
+          ssl:
+            enable: true
+          starttls:
+            enable: true
+            required: true
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+
+mybatis-plus:
+  type-aliases-package: com.typemoon.entity
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+jwt:
+  secret: typemoon
+
+server:
+  port: 8080
+
+search:
+  mode: elasticsearch
+
+upload:
+  mode: oss
+  oss:
+    url: http://Bucket??/
+    endpoint: OSS??endpoint
+    accessKeyId: OSS??accessKeyId
+    accessKeySecret: OSS??accessKeySecret
+    bucketName: OSS??bucketName
+  minio:
+    url: http://minio?ip:9000/
+    endpoint: http://minio?ip:9000
+    accesskey: ???
+    secretKey: ??
+    bucketName: ????
+
+website:
+  url: https://????
+
+qq:
+  app-id: QQ APPID
+  check-token-url: https://graph.qq.com/oauth2.0/me?access_token={access_token}
+  user-info-url: https://graph.qq.com/user/get_user_info?openid={openid}&access_token={access_token}&oauth_consumer_key={oauth_consumer_key}
