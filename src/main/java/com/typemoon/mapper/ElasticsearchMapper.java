@@ -1,4 +1,4 @@
-package com.typemoon.mapper;//package com.typemoon.mapper;
+//package com.typemoon.mapper;//package com.typemoon.mapper;
 //
 //import com.typemoon.model.dto.ArticleSearchDTO;
 //import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;

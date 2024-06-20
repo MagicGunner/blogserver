@@ -7,7 +7,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver # Mysql8.0 Driver
     url: jdbc:mysql://localhost:3306/missblueblog_db?serverTimezone=Asia/Shanghai&allowMultiQueries=true
     username: root
-    password: 1234
+    password: ma19940101
     hikari:
       minimum-idle: 10
       idle-timeout: 180000
@@ -24,10 +24,10 @@ spring:
         port: 6379
 
   rabbitmq:
-    host: rabbitmq?ip
+    host: localhost
     port: 5672
-    username: ??
-    password: ??
+    username: guest
+    password: guest
     listener:
       simple:
         retry:
@@ -35,9 +35,9 @@ spring:
           max-attempts: 3
           initial-interval: 3000
 
-  elasticsearch:
-    rest:
-      uris: es?ip:9200
+  #  elasticsearch:
+  #    rest:
+  #      uris: es?ip:9200
 
   mail:
     host: smtp.163.com

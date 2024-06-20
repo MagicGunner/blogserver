@@ -7,6 +7,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -74,6 +75,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public UserDetailsDTO getUserDetailDTO(HttpServletRequest request) {
+        val header = request.getHeader(TOKEN_HEADER);
         String token = Optional.ofNullable(request.getHeader(TOKEN_HEADER)).orElse("").replaceFirst(TOKEN_PREFIX, "");
         if (StringUtils.hasText(token) && !token.equals("null")) {
             Claims claims = parseToken(token);
