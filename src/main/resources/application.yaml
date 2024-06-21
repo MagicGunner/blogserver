@@ -7,7 +7,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver # Mysql8.0 Driver
     url: jdbc:mysql://localhost:3306/missblueblog_db?serverTimezone=Asia/Shanghai&allowMultiQueries=true
     username: root
-    password: ma19940101
+    password: 1234
     hikari:
       minimum-idle: 10
       idle-timeout: 180000
@@ -29,10 +29,6 @@ spring:
           enabled: true
           max-attempts: 3
           initial-interval: 3000
-
-  #  elasticsearch:
-  #    rest:
-  #      uris: es?ip:9200
 
   mail:
     host: smtp.163.com
@@ -71,6 +67,8 @@ spring:
           max-idle: 100
           max-active: 100
           max-wait: 10000
+  elasticsearch:
+    uris: localhost:9200
 
 mybatis-plus:
   type-aliases-package: com.typemoon.entity
@@ -104,7 +102,7 @@ upload:
     bucketName: ????
 
 website:
-  url: https://????
+  url: http://localhost:5173
 
 qq:
   app-id: QQ APPID

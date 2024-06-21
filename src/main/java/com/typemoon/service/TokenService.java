@@ -1,7 +1,8 @@
 package com.typemoon.service;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.typemoon.model.dto.UserDetailsDTO;
-import io.jsonwebtoken.Claims;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 
@@ -15,7 +16,7 @@ public interface TokenService {
 
     void renewToken(UserDetailsDTO userDetailsDTO);
 
-    Claims parseToken(String token);
+    DecodedJWT parseToken(String token);
 
     UserDetailsDTO getUserDetailDTO(HttpServletRequest request);
 

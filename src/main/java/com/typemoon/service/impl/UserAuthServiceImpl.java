@@ -19,9 +19,9 @@ import com.typemoon.model.vo.ConditionVO;
 import com.typemoon.model.vo.PasswordVO;
 import com.typemoon.model.vo.QQLoginVO;
 import com.typemoon.model.vo.UserVO;
+import com.typemoon.service.AuroraInfoService;
 import com.typemoon.service.RedisService;
 import com.typemoon.service.TokenService;
-import com.typemoon.service.TypemoonInfoService;
 import com.typemoon.service.UserAuthService;
 import com.typemoon.strategy.context.SocialLoginStrategyContext;
 import com.typemoon.util.PageUtil;
@@ -59,7 +59,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     private RedisService redisService;
 
     @Autowired
-    private TypemoonInfoService typemoonInfoService;
+    private AuroraInfoService auroraInfoService;
 
     @Autowired
     private UserInfoMapper userInfoMapper;
@@ -128,7 +128,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         UserInfo userInfo = UserInfo.builder()
                 .email(userVO.getUsername())
                 .nickname(CommonConstant.DEFAULT_NICKNAME + IdWorker.getId())
-                .avatar(typemoonInfoService.getWebsiteConfig().getUserAvatar())
+                .avatar(auroraInfoService.getWebsiteConfig().getUserAvatar())
                 .build();
         userInfoMapper.insert(userInfo);
         UserRole userRole = UserRole.builder()

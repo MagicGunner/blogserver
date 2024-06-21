@@ -1,22 +1,19 @@
 package com.typemoon.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.typemoon.entity.About;
-import com.typemoon.entity.Article;
-import com.typemoon.entity.Comment;
-import com.typemoon.entity.WebsiteConfig;
+import com.typemoon.entity.*;
 import com.typemoon.mapper.*;
 import com.typemoon.model.dto.*;
 import com.typemoon.model.vo.AboutVO;
 import com.typemoon.model.vo.WebsiteConfigVO;
+import com.typemoon.service.AuroraInfoService;
 import com.typemoon.service.RedisService;
-import com.typemoon.service.TypemoonInfoService;
 import com.typemoon.service.UniqueViewService;
 import com.typemoon.util.BeanCopyUtil;
 import com.typemoon.util.IpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
@@ -35,7 +32,7 @@ import static com.typemoon.constant.CommonConstant.*;
 import static com.typemoon.constant.RedisConstant.*;
 
 @Service
-public class TypemoonInfoServiceImpl implements TypemoonInfoService {
+public class AuroraInfoServiceImpl implements AuroraInfoService {
 
     @Autowired
     private WebsiteConfigMapper websiteConfigMapper;
@@ -93,7 +90,7 @@ public class TypemoonInfoServiceImpl implements TypemoonInfoService {
 
     @SneakyThrows
     @Override
-    public TypemoonHomeInfoDTO getTypemoonHomeInfo() {
+    public AuroraHomeInfoDTO getAuroraHomeInfo() {
         CompletableFuture<Integer> asyncArticleCount = CompletableFuture.supplyAsync(() -> Math.toIntExact(articleMapper.selectCount(new LambdaQueryWrapper<Article>().eq(Article::getIsDelete, FALSE))));
         CompletableFuture<Integer> asyncCategoryCount = CompletableFuture.supplyAsync(() -> Math.toIntExact(categoryMapper.selectCount(null)));
         CompletableFuture<Integer> asyncTagCount = CompletableFuture.supplyAsync(() -> Math.toIntExact(tagMapper.selectCount(null)));
@@ -103,7 +100,7 @@ public class TypemoonInfoServiceImpl implements TypemoonInfoService {
             Object count = redisService.get(BLOG_VIEWS_COUNT);
             return Integer.parseInt(Optional.ofNullable(count).orElse(0).toString());
         });
-        return TypemoonHomeInfoDTO.builder()
+        return AuroraHomeInfoDTO.builder()
                 .articleCount(asyncArticleCount.get())
                 .categoryCount(asyncCategoryCount.get())
                 .tagCount(asyncTagCount.get())
@@ -113,18 +110,19 @@ public class TypemoonInfoServiceImpl implements TypemoonInfoService {
     }
 
     @Override
-    public TypemoonAdminInfoDTO getTypemoonAdminInfo() {
+    public AuroraAdminInfoDTO getAuroraAdminInfo() {
         Object count = redisService.get(BLOG_VIEWS_COUNT);
         Integer viewsCount = Integer.parseInt(Optional.ofNullable(count).orElse(0).toString());
         Integer messageCount = Math.toIntExact(commentMapper.selectCount(new LambdaQueryWrapper<Comment>().eq(Comment::getType, 2)));
         Integer userCount = Math.toIntExact(userInfoMapper.selectCount(null));
-        Integer articleCount = Math.toIntExact(articleMapper.selectCount(new LambdaQueryWrapper<Article>().eq(Article::getIsDelete, FALSE)));
+        Integer articleCount = Math.toIntExact(articleMapper.selectCount(new LambdaQueryWrapper<Article>()
+                .eq(Article::getIsDelete, FALSE)));
         List<UniqueViewDTO> uniqueViews = uniqueViewService.listUniqueViews();
         List<ArticleStatisticsDTO> articleStatisticsDTOs = articleMapper.listArticleStatistics();
         List<CategoryDTO> categoryDTOs = categoryMapper.listCategories();
         List<TagDTO> tagDTOs = BeanCopyUtil.copyList(tagMapper.selectList(null), TagDTO.class);
         Map<Object, Double> articleMap = redisService.zReverseRangeWithScore(ARTICLE_VIEWS_COUNT, 0, 4);
-        TypemoonAdminInfoDTO typemoonAdminInfoDTO = TypemoonAdminInfoDTO.builder()
+        AuroraAdminInfoDTO auroraAdminInfoDTO = AuroraAdminInfoDTO.builder()
                 .articleStatisticsDTOs(articleStatisticsDTOs)
                 .tagDTOs(tagDTOs)
                 .viewsCount(viewsCount)
@@ -136,9 +134,9 @@ public class TypemoonInfoServiceImpl implements TypemoonInfoService {
                 .build();
         if (CollectionUtils.isNotEmpty(articleMap)) {
             List<ArticleRankDTO> articleRankDTOList = listArticleRank(articleMap);
-            typemoonAdminInfoDTO.setArticleRankDTOs(articleRankDTOList);
+            auroraAdminInfoDTO.setArticleRankDTOs(articleRankDTOList);
         }
-        return typemoonAdminInfoDTO;
+        return auroraAdminInfoDTO;
     }
 
     @Override
@@ -179,7 +177,16 @@ public class TypemoonInfoServiceImpl implements TypemoonInfoService {
 
     @Override
     public AboutDTO getAbout() {
-        return null;
+        AboutDTO aboutDTO;
+        Object about = redisService.get(ABOUT);
+        if (Objects.nonNull(about)) {
+            aboutDTO = JSON.parseObject(about.toString(), AboutDTO.class);
+        } else {
+            String content = aboutMapper.selectById(DEFAULT_ABOUT_ID).getContent();
+            aboutDTO = JSON.parseObject(content, AboutDTO.class);
+            redisService.set(ABOUT, content);
+        }
+        return aboutDTO;
     }
 
     private List<ArticleRankDTO> listArticleRank(Map<Object, Double> articleMap) {

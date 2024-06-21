@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class TypemoonBackInfoDTO {
+public class AuroraBackInfoDTO {
 
     private Integer viewsCount;
 

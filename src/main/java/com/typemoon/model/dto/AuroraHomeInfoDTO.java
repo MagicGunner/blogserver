@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TypemoonHomeInfoDTO {
+public class AuroraHomeInfoDTO {
+
     private Integer articleCount;
 
     private Integer talkCount;
@@ -21,5 +22,5 @@ public class TypemoonHomeInfoDTO {
     private WebsiteConfigDTO websiteConfigDTO;
 
     private Integer viewCount;
-}
 
+}

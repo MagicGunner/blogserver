@@ -1,11 +1,14 @@
 package com.typemoon.service.impl;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
 import com.typemoon.model.dto.UserDetailsDTO;
 import com.typemoon.service.RedisService;
 import com.typemoon.service.TokenService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,11 +47,12 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public String createToken(String subject) {
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        Algorithm algorithm = Algorithm.HMAC256(secret);
         SecretKey secretKey = generalKey();
-        return Jwts.builder().setId(getUuid()).setSubject(subject)
-                .setIssuer("huaweimian")
-                .signWith(signatureAlgorithm, secretKey).compact();
+        return JWT.create().withIssuer("MissBlue")
+                .withSubject(subject)
+                .withJWTId(getUuid())
+                .sign(algorithm);
     }
 
     @Override
@@ -68,9 +73,17 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public Claims parseToken(String token) {
-        SecretKey secretKey = generalKey();
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+    public DecodedJWT parseToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer("MissBlue")
+                    .build();
+            return verifier.verify(token);
+        } catch (JWTVerificationException exception) {
+            // Invalid signature/claims
+            throw new RuntimeException("Invalid Token", exception);
+        }
     }
 
     @Override
@@ -78,8 +91,8 @@ public class TokenServiceImpl implements TokenService {
         val header = request.getHeader(TOKEN_HEADER);
         String token = Optional.ofNullable(request.getHeader(TOKEN_HEADER)).orElse("").replaceFirst(TOKEN_PREFIX, "");
         if (StringUtils.hasText(token) && !token.equals("null")) {
-            Claims claims = parseToken(token);
-            String userId = claims.getSubject();
+            DecodedJWT decodedJWT = parseToken(token);
+            String userId = decodedJWT.getSubject();
             return (UserDetailsDTO) redisService.hGet(LOGIN_USER, userId);
         }
         return null;
