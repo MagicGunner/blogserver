@@ -17,5 +17,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
         response.setContentType(CommonConstant.APPLICATION_JSON);
         response.getWriter().write(JSON.toJSONString(ResultVO.fail("权限不足")));
+        System.out.println(accessDeniedException.getMessage());
+        accessDeniedException.printStackTrace();
     }
 }

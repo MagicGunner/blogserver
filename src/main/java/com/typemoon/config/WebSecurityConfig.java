@@ -79,36 +79,9 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.formLogin(formLogin -> {
-            formLogin.loginProcessingUrl("users/login")
+            formLogin.loginProcessingUrl("/users/login")
                     .successHandler(authenticationSuccessHandler)
                     .failureHandler(authenticationFailureHandler);
-
-//            formLogin.loginProcessingUrl("users/login")
-//                    .successHandler(new AuthenticationSuccessHandler() {
-//
-//                        @Override
-//                        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-//                            response.setContentType("text/html;charset=utf-8");
-//                            response.getWriter().write("LoginOK");
-//
-//                            System.out.println("authentication.getCredentials():" + authentication.getCredentials());
-//                            System.out.println("authentication.getPrincipal():" + authentication.getPrincipal());
-//                            System.out.println("authentication.getAuthorities():" + authentication.getAuthorities());
-//
-//                        }
-//                    })
-//                    .failureHandler(new AuthenticationFailureHandler() {
-//                        @Override
-//                        public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-//                            response.setContentType("text/html;charset=utf-8");
-//                            response.getWriter().write("LoginError");
-//                            System.out.println("登录异常信息：");
-//                            exception.printStackTrace();
-//                        }
-//                    });
-
-//            formLogin.successHandler(authenticationSuccessHandler)
-//                    .failureHandler(authenticationFailureHandler);
         });
         http.authorizeHttpRequests((authorize) -> {
             authorize.withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
@@ -120,11 +93,9 @@ public class WebSecurityConfig {
                 }
             });
             authorize.anyRequest().permitAll();
-//            authorize.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
-//            authorize.requestMatchers("/login").permitAll();
 
         });
-
+        
         http.csrf(Customizer.withDefaults())
                 .cors(Customizer.withDefaults())
                 .exceptionHandling(exceptionHandler -> {
