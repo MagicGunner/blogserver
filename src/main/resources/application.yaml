@@ -91,8 +91,8 @@ upload:
   oss:
     url: https://missblue-blog.oss-cn-shanghai.aliyuncs.com/
     endpoint: oss-cn-shanghai.aliyuncs.com
-    accessKeyId: LTAI5tQBFxKkELMrWzvW244C
-    accessKeySecret: wnOuv7ibnPWCsTi501Z5B3Jf938ncj
+    accessKeyId: ？？？？
+    accessKeySecret: ？？？？
     bucketName: missblue-blog
   minio:
     url: http://minio?ip:9000/
