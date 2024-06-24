@@ -29,7 +29,7 @@ public class OssUploadStrategyImpl extends AbstractUploadStrategyImpl {
         return ossConfigProperties.getUrl() + filePath;
     }
 
-    private OSS getOssClient() {
+    public OSS getOssClient() {
         return new OSSClientBuilder().build(ossConfigProperties.getEndpoint(), ossConfigProperties.getAccessKeyId(), ossConfigProperties.getAccessKeySecret());
     }
 
