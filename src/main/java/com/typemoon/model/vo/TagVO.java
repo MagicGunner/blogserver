@@ -20,7 +20,7 @@ public class TagVO {
     private Integer id;
 
     @NotBlank(message = "标签名不能为空")
-    @ApiModelProperty(name = "categoryName", value = "标签名", required = true, dataType = "String")
+    @ApiModelProperty(name = "tagName", value = "标签名", required = true, dataType = "String")
     private String tagName;
 
 }

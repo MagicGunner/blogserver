@@ -26,12 +26,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(3600)
                 .allowedHeaders("*");
-        
-//        registry.addMapping("/**")
-//                .allowCredentials(true)
-//                .allowedHeaders("*")
-//                .allowedOrigins("*")
-//                .allowedMethods("*");
     }
 
     @Override

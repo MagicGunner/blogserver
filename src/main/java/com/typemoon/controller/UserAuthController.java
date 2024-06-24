@@ -1,24 +1,20 @@
 package com.typemoon.controller;
 
 import com.typemoon.annotation.AccessLimit;
-import com.typemoon.model.dto.PageResultDTO;
-import com.typemoon.model.dto.UserAdminDTO;
-import com.typemoon.model.dto.UserAreaDTO;
-import com.typemoon.model.vo.ConditionVO;
-import com.typemoon.model.vo.ResultVO;
-import com.typemoon.model.vo.UserVO;
+import com.typemoon.annotation.OptLog;
+import com.typemoon.model.dto.*;
+import com.typemoon.model.vo.*;
 import com.typemoon.service.UserAuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import static com.typemoon.constant.OptTypeConstant.UPDATE;
 
 @Api(tags = "用户账号模块")
 @RestController
@@ -53,5 +49,33 @@ public class UserAuthController {
     public ResultVO<?> register(@Valid @RequestBody UserVO userVO) {
         userAuthService.register(userVO);
         return ResultVO.ok();
+    }
+
+    @OptLog(optType = UPDATE)
+    @ApiOperation(value = "修改密码")
+    @PutMapping("/users/password")
+    public ResultVO<?> updatePassword(@Valid @RequestBody UserVO user) {
+        userAuthService.updatePassword(user);
+        return ResultVO.ok();
+    }
+
+    @OptLog(optType = UPDATE)
+    @ApiOperation(value = "修改管理员密码")
+    @PutMapping("/admin/users/password")
+    public ResultVO<?> updateAdminPassword(@Valid @RequestBody PasswordVO passwordVO) {
+        userAuthService.updateAdminPassword(passwordVO);
+        return ResultVO.ok();
+    }
+
+    @ApiOperation("用户登出")
+    @PostMapping("/users/logout")
+    public ResultVO<UserLogoutStatusDTO> logout() {
+        return ResultVO.ok(userAuthService.logout());
+    }
+
+    @ApiOperation(value = "qq登录")
+    @PostMapping("/users/oauth/qq")
+    public ResultVO<UserInfoDTO> qqLogin(@Valid @RequestBody QQLoginVO qqLoginVO) {
+        return ResultVO.ok(userAuthService.qqLogin(qqLoginVO));
     }
 }

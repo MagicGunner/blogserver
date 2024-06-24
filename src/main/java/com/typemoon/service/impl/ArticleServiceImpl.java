@@ -89,7 +89,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         TopAndFeaturedArticlesDTO topAndFeaturedArticlesDTO = new TopAndFeaturedArticlesDTO();
         topAndFeaturedArticlesDTO.setTopArticle(articleCardDTOs.get(0));
-        articleCardDTOs.removeFirst();
+        articleCardDTOs.remove(0);
         topAndFeaturedArticlesDTO.setFeaturedArticles(articleCardDTOs);
         return topAndFeaturedArticlesDTO;
     }

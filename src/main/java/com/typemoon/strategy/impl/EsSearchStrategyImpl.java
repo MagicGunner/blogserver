@@ -1,25 +1,25 @@
-package com.typemoon.strategy.impl;//package com.typemoon.strategy.impl;
+//package com.typemoon.strategy.impl;//package com.typemoon.strategy.impl;
 //
+//import co.elastic.clients.elasticsearch.ElasticsearchClient;
+//import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+//import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+//import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+//import co.elastic.clients.elasticsearch.core.SearchRequest;
+//import co.elastic.clients.elasticsearch.core.SearchResponse;
+//import co.elastic.clients.elasticsearch.core.search.Highlight;
+//import co.elastic.clients.elasticsearch.core.search.Hit;
 //import com.typemoon.model.dto.ArticleSearchDTO;
 //import com.typemoon.strategy.SearchStrategy;
-//import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 //import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 //import lombok.extern.log4j.Log4j2;
-//import org.elasticsearch.index.query.BoolQueryBuilder;
-//import org.elasticsearch.index.query.QueryBuilders;
-//import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+//
 //import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-//import org.springframework.data.elasticsearch.core.SearchHits;
-//import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 //import org.springframework.stereotype.Service;
 //
+//import java.io.IOException;
 //import java.util.ArrayList;
 //import java.util.List;
 //import java.util.stream.Collectors;
-//
-//import static com.typemoon.constant.CommonConstant.*;
-//import static com.typemoon.enums.ArticleStatusEnum.PUBLIC;
 //
 //
 //@Log4j2
@@ -27,54 +27,62 @@ package com.typemoon.strategy.impl;//package com.typemoon.strategy.impl;
 //public class EsSearchStrategyImpl implements SearchStrategy {
 //
 //    @Autowired
-//    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+//    private ElasticsearchClient elasticsearchClient;
 //
 //    @Override
-//    public List<ArticleSearchDTO> searchArticle(String keywords) {
+//    public List<ArticleSearchDTO> searchArticle(String keywords) throws IOException {
 //        if (StringUtils.isBlank(keywords)) {
 //            return new ArrayList<>();
 //        }
 //        return search(buildQuery(keywords));
 //    }
 //
-//    private NativeSearchQueryBuilder buildQuery(String keywords) {
-//        NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
-//        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-//        boolQueryBuilder.must(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("articleTitle", keywords))
-//                        .should(QueryBuilders.matchQuery("articleContent", keywords)))
-//                .must(QueryBuilders.termQuery("isDelete", FALSE))
-//                .must(QueryBuilders.termQuery("status", PUBLIC.getStatus()));
-//        nativeSearchQueryBuilder.withQuery(boolQueryBuilder);
-//        return nativeSearchQueryBuilder;
+//    private Query buildQuery(String keywords) {
+//        BoolQuery.Builder boolQueryBuilder = QueryBuilders.bool();
+//        boolQueryBuilder.must(
+//                QueryBuilders.match().field("articleTitle").query(keywords).build()._toQuery()
+//        );
+//        boolQueryBuilder.must(
+//                QueryBuilders.match().field("articleContent").query(keywords).build()._toQuery()
+//        );
+//        boolQueryBuilder.must(
+//                QueryBuilders.term().field("isDelete").value(false).build()._toQuery()
+//        );
+//        boolQueryBuilder.must(
+//                QueryBuilders.term().field("status").value("PUBLIC").build()._toQuery()
+//        );
+//
+//        return boolQueryBuilder.build()._toQuery();
 //    }
 //
-//    private List<ArticleSearchDTO> search(NativeSearchQueryBuilder nativeSearchQueryBuilder) {
-//        HighlightBuilder.Field titleField = new HighlightBuilder.Field("articleTitle");
-//        titleField.preTags(PRE_TAG);
-//        titleField.postTags(POST_TAG);
-//        HighlightBuilder.Field contentField = new HighlightBuilder.Field("articleContent");
-//        contentField.preTags(PRE_TAG);
-//        contentField.postTags(POST_TAG);
-//        contentField.fragmentSize(50);
-//        nativeSearchQueryBuilder.withHighlightFields(titleField, contentField);
-//        try {
-//            SearchHits<ArticleSearchDTO> search = elasticsearchRestTemplate.search(nativeSearchQueryBuilder.build(), ArticleSearchDTO.class);
-//            return search.getSearchHits().stream().map(hit -> {
-//                ArticleSearchDTO article = hit.getContent();
-//                List<String> titleHighLightList = hit.getHighlightFields().get("articleTitle");
-//                if (CollectionUtils.isNotEmpty(titleHighLightList)) {
-//                    article.setArticleTitle(titleHighLightList.get(0));
-//                }
-//                List<String> contentHighLightList = hit.getHighlightFields().get("articleContent");
-//                if (CollectionUtils.isNotEmpty(contentHighLightList)) {
-//                    article.setArticleContent(contentHighLightList.get(contentHighLightList.size() - 1));
-//                }
-//                return article;
-//            }).collect(Collectors.toList());
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
+//
+//    private List<ArticleSearchDTO> search(Query query) throws IOException {
+//        Highlight highlight = Highlight.of(h -> h.fields("articleTitle", f -> f.preTags("<em>").postTags("</em>"))
+//                .fields("articleContent", f -> f.preTags("<em>").postTags("</em>").fragmentSize(50)));
+//
+//        SearchRequest searchRequest = SearchRequest.of(s -> s
+//                .index("your_index_name")
+//                .query(query)
+//                .highlight(highlight)
+//        );
+//
+//        SearchResponse<ArticleSearchDTO> response = elasticsearchClient.search(searchRequest, ArticleSearchDTO.class);
+//
+//        return response.hits().hits().stream().map(hit -> {
+//            ArticleSearchDTO article = hit.source();
+//            if (article != null) {
+//                article.setArticleTitle(getHighlight(hit, "articleTitle"));
+//                article.setArticleContent(getHighlight(hit, "articleContent"));
+//            }
+//            return article;
+//        }).collect(Collectors.toList());
+//    }
+//
+//    private String getHighlight(Hit<ArticleSearchDTO> hit, String field) {
+//        if (hit.highlight() != null && hit.highlight().containsKey(field)) {
+//            return String.join(" ", hit.highlight().get(field));
 //        }
-//        return new ArrayList<>();
+//        return null;
 //    }
 //
 //}
