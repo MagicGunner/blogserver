@@ -7,7 +7,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver # Mysql8.0 Driver
     url: jdbc:mysql://localhost:3306/missblueblog_db?serverTimezone=Asia/Shanghai&allowMultiQueries=true
     username: root
-    password: 1234
+    password: ma19940101
     hikari:
       minimum-idle: 10
       idle-timeout: 180000
@@ -89,11 +89,19 @@ search:
 upload:
   mode: oss
   oss:
+<<<<<<< HEAD
     url: https://missblue-blog.oss-cn-shanghai.aliyuncs.com/
     endpoint: oss-cn-shanghai.aliyuncs.com
     accessKeyId: ？？？？
     accessKeySecret: ？？？？
     bucketName: missblue-blog
+=======
+    url: http://Bucket??/
+    endpoint: OSS??endpoint
+    accessKeyId: OSS??accessKeyId
+    accessKeySecret: OSS??accessKeySecret
+    bucketName: OSS??bucketName
+>>>>>>> parent of 06b2265 (修改依赖版本)
   minio:
     url: http://minio?ip:9000/
     endpoint: http://minio?ip:9000
