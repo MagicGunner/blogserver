@@ -89,28 +89,20 @@ search:
 upload:
   mode: oss
   oss:
-<<<<<<< HEAD
     url: https://missblue-blog.oss-cn-shanghai.aliyuncs.com/
     endpoint: oss-cn-shanghai.aliyuncs.com
-    accessKeyId: ？？？？
-    accessKeySecret: ？？？？
+    accessKeyId:
+    accessKeySecret:
     bucketName: missblue-blog
-=======
-    url: http://Bucket??/
-    endpoint: OSS??endpoint
-    accessKeyId: OSS??accessKeyId
-    accessKeySecret: OSS??accessKeySecret
-    bucketName: OSS??bucketName
->>>>>>> parent of 06b2265 (修改依赖版本)
   minio:
-    url: http://minio?ip:9000/
-    endpoint: http://minio?ip:9000
-    accesskey: ???
-    secretKey: ??
-    bucketName: ????
+    url: http://minio的ip:9000/
+    endpoint: http://minio的ip:9000
+    accesskey: 用户名
+    secretKey: 密码
+    bucketName: 桶的名称
 
 website:
-  url: http://localhost:5173
+  url: https://www.magicgunner.cn
 
 qq:
   app-id: QQ APPID

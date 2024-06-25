@@ -1,7 +1,7 @@
 package com.typemoon.quartz;//package com.typemoon.quartz;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.typemoon.entity.*;
 //import com.typemoon.mapper.ElasticsearchMapper;
 import com.typemoon.mapper.UniqueViewMapper;
